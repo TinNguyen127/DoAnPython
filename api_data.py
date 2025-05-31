@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat May 31 12:44:08 2025
-
-@author: bingu
-"""
-
 import requests
 import json
 import os
@@ -31,7 +24,7 @@ def load_holidays():
 
 def save_holidays(holidays):
     if not os.path.exists(DATA_DIR):
-        os.makedirs(DATA_DIR) # Đảm bảo thư mục tồn tại
+        os.makedirs(DATA_DIR)
     with open(HOLIDAYS_FILE, "w", encoding="utf-8") as f:
         json.dump(holidays, f, indent=4, ensure_ascii=False)
 
@@ -40,11 +33,12 @@ def get_public_holidays(year=None):
         year = datetime.now().year
 
     url = HOLIDAYS_API_URL.format(year=year)
-    print(f"Đang lấy ngày lễ từ API: {url}")
+    
     try:
         response = requests.get(url, timeout=10)
-        response.raise_for_status()
+        response.raise_for_status() 
         holidays_data = response.json()
+        
         processed_holidays = []
         for h in holidays_data:
             processed_holidays.append({
@@ -54,7 +48,7 @@ def get_public_holidays(year=None):
             })
         
         print(f"Đã lấy được {len(processed_holidays)} ngày lễ từ API.")
-        save_holidays(processed_holidays)
+        save_holidays(processed_holidays) 
         return processed_holidays
     except requests.exceptions.RequestException as e:
         print(f"Lỗi khi lấy dữ liệu ngày lễ từ API (có thể do mạng hoặc API không phản hồi): {e}")
@@ -78,8 +72,7 @@ def get_public_holidays(year=None):
 if __name__ == "__main__":
     current_year_holidays = get_public_holidays()
     if current_year_holidays:
-        print("\nNgày lễ năm hiện tại:")
-        for h in current_year_holidays:
-            print(f"  {h['date']}: {h['localName']} ({h['name']})")
+        for holiday in current_year_holidays:
+            print(f"Ngày: {holiday['date']}, Tên: {holiday['name']}, Tên địa phương: {holiday['localName']}")
     else:
-        print("Không thể tải ngày lễ.")
+        print("Không thể lấy dữ liệu ngày lễ.")
